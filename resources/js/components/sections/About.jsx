@@ -1,6 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
+
+const KAPRODI_PHOTO = 'kaprodihes.jpg';
+const KAPRODI_NAME = 'Muspita Sari, M.H.';
 
 const About = () => {
+  const [hasPhoto, setHasPhoto] = useState(true);
+
   return (
     <section className="section" style={{ backgroundColor: 'var(--bg-primary)' }}>
       <div className="container">
@@ -27,21 +32,61 @@ const About = () => {
               opacity: 0.15,
               filter: 'blur(20px)'
             }}></div>
-            <img 
-              src="kaprodihes.jpg" 
-              alt="Ketua Program Studi" 
-              style={{
-                position: 'relative',
-                borderRadius: 'var(--radius-xl)',
-                boxShadow: 'var(--shadow-lg)',
-                width: '100%',
-                height: 'auto'
-              }}
-            />
+            {hasPhoto ? (
+              <img 
+                src={KAPRODI_PHOTO}
+                alt={KAPRODI_NAME}
+                onError={() => setHasPhoto(false)}
+                style={{
+                  position: 'relative',
+                  borderRadius: 'var(--radius-xl)',
+                  boxShadow: 'var(--shadow-lg)',
+                  width: '100%',
+                  height: 'auto'
+                }}
+              />
+            ) : (
+              <div
+                style={{
+                  position: 'relative',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: 'var(--space-md)',
+                  width: '100%',
+                  aspectRatio: '3 / 4',
+                  borderRadius: 'var(--radius-xl)',
+                  boxShadow: 'var(--shadow-lg)',
+                  background: 'linear-gradient(180deg, var(--accent-50), var(--accent-100))',
+                  border: '1px solid var(--accent-200)',
+                  color: 'var(--accent-600)'
+                }}
+                aria-label={KAPRODI_NAME}
+              >
+                <div
+                  style={{
+                    width: '7.5rem',
+                    height: '7.5rem',
+                    borderRadius: '50%',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    background: 'rgba(255, 255, 255, 0.75)',
+                    boxShadow: '0 8px 24px rgba(13, 148, 136, 0.12)'
+                  }}
+                >
+                  <i className="fas fa-user" style={{ fontSize: '3rem', opacity: 0.7 }}></i>
+                </div>
+                <span style={{ fontSize: '0.875rem', fontWeight: 500, color: 'var(--accent-700)', opacity: 0.8 }}>
+                  Ketua Program Studi
+                </span>
+              </div>
+            )}
           </div>
           <div>
             <h3 style={{ fontSize: '1.5rem', fontWeight: '600', marginBottom: 'var(--space-md)', color: 'var(--gray-900)' }}>
-              Dr. Hj. Hukmiah, L.c., M.Ag
+              {KAPRODI_NAME}
             </h3>
             <p style={{ color: 'var(--gray-600)', marginBottom: 'var(--space-md)', fontStyle: 'italic' }}>
               Assalamualaikum Wr. Wb.
