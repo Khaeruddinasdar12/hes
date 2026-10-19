@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-const KAPRODI_PHOTO = 'kaprodihes.jpg';
+const KAPRODI_PHOTO = 'kaprodi.jpeg';
 const KAPRODI_NAME = 'Muspita Sari, M.H.';
 
 const About = () => {

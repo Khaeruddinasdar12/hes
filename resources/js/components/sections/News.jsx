@@ -120,7 +120,19 @@ const News = ({ limit = null }) => {
             gap: 'var(--space-lg)'
           }}>
             {displayedNews.map((news) => (
-              <div key={news.id} className="card">
+              <Link
+                key={news.id}
+                to={`/news/${news.slug}`}
+                className="card"
+                onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+                style={{
+                  textDecoration: 'none',
+                  color: 'inherit',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  cursor: 'pointer'
+                }}
+              >
                 <div className="card-image">
                   <img src={news.image || defaultImage} alt={news.title} />
                 </div>
@@ -137,21 +149,20 @@ const News = ({ limit = null }) => {
                   </div>
                   <h3 className="card-title">{news.title}</h3>
                   <p className="card-description">{news.excerpt}</p>
-                  <Link to={`/news/${news.slug}`} style={{
+                  <span style={{
                     color: 'var(--accent-600)',
                     textDecoration: 'none',
                     fontSize: '0.875rem',
                     fontWeight: '500',
                     display: 'inline-flex',
                     alignItems: 'center',
-                    gap: 'var(--space-xs)',
-                    transition: 'color var(--transition-fast)'
+                    gap: 'var(--space-xs)'
                   }}>
                     Baca Selengkapnya
                     <i className="fas fa-arrow-right"></i>
-                  </Link>
+                  </span>
                 </div>
-              </div>
+              </Link>
             ))}
           </div>
         ) : (

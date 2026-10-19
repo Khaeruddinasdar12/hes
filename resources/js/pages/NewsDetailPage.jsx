@@ -6,10 +6,25 @@ const NewsDetailPage = () => {
   const [news, setNews] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [showImageModal, setShowImageModal] = useState(false);
   
   useEffect(() => {
     fetchNews();
   }, [slug]);
+
+  useEffect(() => {
+    const handleEscape = (e) => {
+      if (e.key === 'Escape' && showImageModal) {
+        setShowImageModal(false);
+      }
+    };
+    window.addEventListener('keydown', handleEscape);
+    document.body.style.overflow = showImageModal ? 'hidden' : '';
+    return () => {
+      window.removeEventListener('keydown', handleEscape);
+      document.body.style.overflow = '';
+    };
+  }, [showImageModal]);
   
   const fetchNews = async () => {
     try {
@@ -116,18 +131,32 @@ const NewsDetailPage = () => {
 
             {/* Image */}
             {news.image && (
-              <div style={{ 
-                borderRadius: 'var(--radius-xl)', 
-                overflow: 'hidden',
-                marginBottom: 'var(--space-2xl)'
-              }}>
+              <div
+                onClick={() => setShowImageModal(true)}
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    setShowImageModal(true);
+                  }
+                }}
+                style={{ 
+                  borderRadius: 'var(--radius-xl)', 
+                  overflow: 'hidden',
+                  marginBottom: 'var(--space-2xl)',
+                  cursor: 'zoom-in',
+                  position: 'relative'
+                }}
+              >
                 <img 
                   src={news.image || defaultImage} 
                   alt={news.title}
                   style={{ 
                     width: '100%', 
                     height: '400px',
-                    objectFit: 'cover'
+                    objectFit: 'cover',
+                    display: 'block'
                   }}
                 />
               </div>
@@ -146,6 +175,67 @@ const NewsDetailPage = () => {
           </>
         )}
       </div>
+
+      {showImageModal && news?.image && (
+        <div
+          onClick={() => setShowImageModal(false)}
+          role="dialog"
+          aria-modal="true"
+          aria-label={news.title}
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: 'rgba(0, 0, 0, 0.9)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 9999,
+            padding: 'var(--space-lg)',
+            cursor: 'zoom-out'
+          }}
+        >
+          <button
+            type="button"
+            onClick={() => setShowImageModal(false)}
+            aria-label="Tutup foto"
+            style={{
+              position: 'absolute',
+              top: 'var(--space-lg)',
+              right: 'var(--space-lg)',
+              background: 'rgba(255, 255, 255, 0.2)',
+              border: 'none',
+              color: '#ffffff',
+              fontSize: '2rem',
+              width: '45px',
+              height: '45px',
+              borderRadius: '50%',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              lineHeight: 1,
+              zIndex: 10000
+            }}
+          >
+            &times;
+          </button>
+          <img
+            src={news.image}
+            alt={news.title}
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              maxWidth: '100%',
+              maxHeight: '90vh',
+              objectFit: 'contain',
+              borderRadius: 'var(--radius-lg)',
+              cursor: 'default'
+            }}
+          />
+        </div>
+      )}
     </div>
   );
 };
