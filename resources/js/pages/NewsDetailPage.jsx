@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { useParams, Link } from 'react-router-dom';
 
 const NewsDetailPage = () => {
@@ -6,7 +7,7 @@ const NewsDetailPage = () => {
   const [news, setNews] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [showImageModal, setShowImageModal] = useState(false);
+  const [modalImage, setModalImage] = useState(null);
   
   useEffect(() => {
     fetchNews();
@@ -14,17 +15,17 @@ const NewsDetailPage = () => {
 
   useEffect(() => {
     const handleEscape = (e) => {
-      if (e.key === 'Escape' && showImageModal) {
-        setShowImageModal(false);
+      if (e.key === 'Escape' && modalImage) {
+        setModalImage(null);
       }
     };
     window.addEventListener('keydown', handleEscape);
-    document.body.style.overflow = showImageModal ? 'hidden' : '';
+    document.body.style.overflow = modalImage ? 'hidden' : '';
     return () => {
       window.removeEventListener('keydown', handleEscape);
       document.body.style.overflow = '';
     };
-  }, [showImageModal]);
+  }, [modalImage]);
   
   const fetchNews = async () => {
     try {
@@ -42,6 +43,22 @@ const NewsDetailPage = () => {
       setError('Terjadi kesalahan saat memuat berita');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const openImageModal = (src) => {
+    if (src) {
+      setModalImage(src);
+    }
+  };
+
+  const closeImageModal = () => setModalImage(null);
+
+  const handleContentClick = (e) => {
+    const image = e.target.closest('img');
+    if (image?.src) {
+      e.preventDefault();
+      openImageModal(image.src);
     }
   };
 
@@ -73,6 +90,7 @@ const NewsDetailPage = () => {
   }
 
   const defaultImage = "https://images.unsplash.com/photo-1581091226835-a8a1ac5b8c7c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1171&q=80";
+  const coverImage = news?.image || null;
 
   return (
     <div className="section" style={{ backgroundColor: 'var(--bg-primary)' }}>
@@ -130,15 +148,15 @@ const NewsDetailPage = () => {
             </div>
 
             {/* Image */}
-            {news.image && (
+            {coverImage && (
               <div
-                onClick={() => setShowImageModal(true)}
+                onClick={() => openImageModal(coverImage)}
                 role="button"
                 tabIndex={0}
                 onKeyDown={(e) => {
                   if (e.key === 'Enter' || e.key === ' ') {
                     e.preventDefault();
-                    setShowImageModal(true);
+                    openImageModal(coverImage);
                   }
                 }}
                 style={{ 
@@ -150,7 +168,7 @@ const NewsDetailPage = () => {
                 }}
               >
                 <img 
-                  src={news.image || defaultImage} 
+                  src={coverImage || defaultImage} 
                   alt={news.title}
                   style={{ 
                     width: '100%', 
@@ -159,12 +177,31 @@ const NewsDetailPage = () => {
                     display: 'block'
                   }}
                 />
+                <div
+                  style={{
+                    position: 'absolute',
+                    right: 'var(--space-md)',
+                    bottom: 'var(--space-md)',
+                    width: '40px',
+                    height: '40px',
+                    borderRadius: '50%',
+                    background: 'rgba(0, 0, 0, 0.55)',
+                    color: '#fff',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    pointerEvents: 'none'
+                  }}
+                >
+                  <i className="fas fa-search-plus" style={{ fontSize: '0.9rem' }}></i>
+                </div>
               </div>
             )}
 
             {/* Content */}
             <div 
               className="news-content"
+              onClick={handleContentClick}
               style={{
                 fontSize: '0.875rem',
                 lineHeight: '1.8',
@@ -176,30 +213,27 @@ const NewsDetailPage = () => {
         )}
       </div>
 
-      {showImageModal && news?.image && (
+      {modalImage && createPortal(
         <div
-          onClick={() => setShowImageModal(false)}
+          onClick={closeImageModal}
           role="dialog"
           aria-modal="true"
-          aria-label={news.title}
+          aria-label={news?.title || 'Foto berita'}
           style={{
             position: 'fixed',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            backgroundColor: 'rgba(0, 0, 0, 0.9)',
+            inset: 0,
+            backgroundColor: 'rgba(0, 0, 0, 0.92)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            zIndex: 9999,
+            zIndex: 10050,
             padding: 'var(--space-lg)',
             cursor: 'zoom-out'
           }}
         >
           <button
             type="button"
-            onClick={() => setShowImageModal(false)}
+            onClick={closeImageModal}
             aria-label="Tutup foto"
             style={{
               position: 'absolute',
@@ -217,28 +251,31 @@ const NewsDetailPage = () => {
               alignItems: 'center',
               justifyContent: 'center',
               lineHeight: 1,
-              zIndex: 10000
+              zIndex: 10051
             }}
           >
             &times;
           </button>
           <img
-            src={news.image}
-            alt={news.title}
+            src={modalImage}
+            alt={news?.title || 'Foto berita'}
             onClick={(e) => e.stopPropagation()}
             style={{
               maxWidth: '100%',
-              maxHeight: '90vh',
+              maxHeight: '92vh',
+              width: 'auto',
+              height: 'auto',
               objectFit: 'contain',
               borderRadius: 'var(--radius-lg)',
-              cursor: 'default'
+              cursor: 'default',
+              boxShadow: '0 12px 40px rgba(0, 0, 0, 0.45)'
             }}
           />
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );
 };
 
 export default NewsDetailPage;
-

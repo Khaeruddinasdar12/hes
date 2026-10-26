@@ -15,6 +15,7 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 
 class NewsResource extends Resource
 {
@@ -37,6 +38,18 @@ class NewsResource extends Resource
     public static function table(Table $table): Table
     {
         return NewsTable::configure($table);
+    }
+
+    public static function getEloquentQuery(): Builder
+    {
+        $query = parent::getEloquentQuery();
+        $user = auth()->user();
+
+        if ($user?->isHmps()) {
+            $query->where('user_id', $user->id);
+        }
+
+        return $query;
     }
 
     public static function getRelations(): array

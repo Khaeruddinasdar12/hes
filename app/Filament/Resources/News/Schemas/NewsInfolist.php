@@ -31,7 +31,8 @@ class NewsInfolist
                     ->html()
                     ->columnSpanFull(),
                 
-                TextEntry::make('user.name'),
+                TextEntry::make('user.name')
+                    ->label('Dibuat oleh'),
 
                 TextEntry::make('created_at_formatted')
                     ->label('Waktu dibuat')

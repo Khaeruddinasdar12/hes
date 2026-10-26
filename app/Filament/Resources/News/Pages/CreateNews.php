@@ -11,8 +11,12 @@ class CreateNews extends CreateRecord
     protected static string $resource = NewsResource::class;
     protected function mutateFormDataBeforeCreate(array $data): array
     {
-        $data['user_id'] = Auth::id();
-        
+        if (! Auth::user()?->isAdmin()) {
+            $data['user_id'] = Auth::id();
+        } else {
+            $data['user_id'] ??= Auth::id();
+        }
+
         return $data;
     }
 }

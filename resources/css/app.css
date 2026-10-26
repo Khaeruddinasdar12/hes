@@ -1168,3 +1168,10 @@ p {
   transform: translateY(-2px);
   box-shadow: 0 6px 20px rgba(5, 150, 105, 0.4);
 }
+
+.news-content img {
+  max-width: 100%;
+  height: auto;
+  cursor: zoom-in;
+  border-radius: var(--radius-lg);
+}

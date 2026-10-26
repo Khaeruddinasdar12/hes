@@ -2,11 +2,13 @@
 
 namespace App\Filament\Resources\News\Schemas;
 
+use App\Models\User;
+use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\RichEditor;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Schema;
-use Filament\Forms\Components\RichEditor;
-use Filament\Forms\Components\DateTimePicker;
 use Illuminate\Support\Str;
 
 class NewsForm
@@ -63,10 +65,21 @@ class NewsForm
                         'style' => 'min-height: 400px'
                     ]), // Mengambil seluruh lebar formulir (3 kolom)
 
+                    Select::make('user_id')
+                    ->label('Dibuat oleh')
+                    ->options(fn () => User::query()->orderBy('name')->pluck('name', 'id'))
+                    ->searchable()
+                    ->required(fn () => auth()->user()?->isAdmin())
+                    ->default(fn () => auth()->id())
+                    ->visible(fn () => auth()->user()?->isAdmin())
+                    ->dehydrated(fn () => auth()->user()?->isAdmin())
+                    ->columnSpan(1),
+
                     DateTimePicker::make('created_at')
                     ->label('Waktu Dibuat')
-                    ->required() 
-                    ->placeholder(now()->format('Y-m-d H:i:s')),
+                    ->required()
+                    ->placeholder(now()->format('Y-m-d H:i:s'))
+                    ->columnSpan(fn () => auth()->user()?->isAdmin() ? 2 : 3),
 
 
 
