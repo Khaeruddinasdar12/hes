@@ -58,5 +58,7 @@ class DatabaseSeeder extends Seeder
                 'file' => null
             ]);
         }
+
+        $this->call(TestimonialSeeder::class);
     }
 }

@@ -1,26 +1,54 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Autoplay, Pagination } from 'swiper/modules';
 import 'swiper/css';
 import 'swiper/css/pagination';
 
+const DEFAULT_IMAGE = 'asset/testimoni/alumni.png';
+
 const Testimonials = () => {
-  const testimonials = [
-    {
-      id: 1,
-      name: "Dedi Setiawan, S.H. ",
-      position: "Alumni 2024 | Financial Advisor",
-      content: "Terkait dengan Program Studi yang saya tempuh, pekerjaan saya saat ini memang tidak sepenuhnya sejalur, karena perusahaan tempat saya bekerja merupakan lembaga keuangan konvensional. Namun, sebagai seorang Financial Advisor, latar belakang pendidikan saya di bidang Hukum Ekonomi Syariah sangat membantu, terutama dalam memberikan penjelasan kepada nasabah Bank Mandiri mengenai dasar-dasar hukum dan prinsip keuangan yang saya pahami selama perkuliahan.Saya merasa bangga menjadi bagian dari alumni Hukum Ekonomi Syariah IAIN Bone. Program studi ini telah membentuk saya menjadi pribadi profesional yang religius, adaptif, dan siap bersaing di dunia industri keuangan modern tanpa meninggalkan nilai-nilai Islam",
-      image: "asset/testimoni/alumni.png"
-    },
-    {
-      id: 2,
-      name: "Wiwi Liapriana, S.H",
-      position: "Alumni 2024 | Penyuluh Agama Islam",
-      content: "Sebagai lulusan Hukum Ekonomi Syariah, saya merasa pekerjaan saya sebagai Penyuluh Agama Islam sangat sesuai dengan bidang ilmu yang saya pelajari pada saat masa perkuliahan. Pengetahuan tentang hukum Islam dan ekonomi syariah sangat membantu saya dalam memberikan bimbingan kepada masyarakat, terutama dalam mengajak mereka menerapkan nilai-nilai kejujuran, keadilan, dan keberkahan dalam kehidupan sehari-hari.",
-      image: "asset/testimoni/alumni.png"
-    },
-  ];
+  const [testimonials, setTestimonials] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchTestimonials();
+  }, []);
+
+  const fetchTestimonials = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch('/api/testimonials');
+      const result = await response.json();
+
+      if (result.success) {
+        setTestimonials(result.data || []);
+      }
+    } catch (err) {
+      console.error('Error fetching testimonials:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <section className="section" style={{ backgroundColor: 'var(--bg-primary)', padding: '4rem 0' }}>
+        <div className="container text-center">
+          <div className="section-header">
+            <h2 className="section-title">Testimoni Alumni</h2>
+            <p className="section-subtitle">Pengalaman mereka setelah lulus</p>
+          </div>
+          <p>Memuat testimoni alumni...</p>
+        </div>
+      </section>
+    );
+  }
+
+  if (testimonials.length === 0) {
+    return null;
+  }
+
+  const canLoop = testimonials.length > 3;
 
   return (
     <section className="section" style={{ backgroundColor: 'var(--bg-primary)', padding: '4rem 0' }}>
@@ -31,9 +59,9 @@ const Testimonials = () => {
         </div>
 
         <Swiper
-          slidesPerView={3}
+          slidesPerView={Math.min(3, testimonials.length)}
           spaceBetween={30}
-          loop={true}
+          loop={canLoop}
           autoplay={{
             delay: 3500,
             disableOnInteraction: false
@@ -41,8 +69,8 @@ const Testimonials = () => {
           pagination={{ clickable: true }}
           breakpoints={{
             320: { slidesPerView: 1 },
-            768: { slidesPerView: 2 },
-            1024: { slidesPerView: 3 }
+            768: { slidesPerView: Math.min(2, testimonials.length) },
+            1024: { slidesPerView: Math.min(3, testimonials.length) }
           }}
           modules={[Pagination, Autoplay]}
           style={{ paddingBottom: '3rem' }}
@@ -72,7 +100,7 @@ const Testimonials = () => {
                       marginBottom: '1rem'
                     }}
                   >
-                    {t.content}
+                    {t.isi}
                   </p>
                 </div>
 
@@ -85,8 +113,8 @@ const Testimonials = () => {
                   }}
                 >
                   <img
-                    src={t.image}
-                    alt={t.name}
+                    src={t.gambar || DEFAULT_IMAGE}
+                    alt={t.nama}
                     style={{
                       width: '56px',
                       height: '56px',
@@ -104,7 +132,7 @@ const Testimonials = () => {
                         color: 'var(--gray-800)'
                       }}
                     >
-                      {t.name}
+                      {t.nama}
                     </h4>
                     <p
                       style={{
@@ -113,7 +141,7 @@ const Testimonials = () => {
                         margin: 0
                       }}
                     >
-                      {t.position}
+                      {t.posisi}
                     </p>
                   </div>
                 </div>

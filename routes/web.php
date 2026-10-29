@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\NewsController;
 use App\Http\Controllers\Api\AnnouncementController;
 use App\Http\Controllers\Api\DosenController;
+use App\Http\Controllers\Api\TestimonialController;
 use App\Http\Controllers\Web\SpaController;
 
 // API Routes
@@ -14,6 +15,7 @@ Route::prefix('api')->group(function () {
     Route::get('/announcements/{slug}', [AnnouncementController::class, 'show']);
     Route::get('/dosens', [DosenController::class, 'index']);
     Route::get('/dosens/{id}', [DosenController::class, 'show']);
+    Route::get('/testimonials', [TestimonialController::class, 'index']);
 });
 
 Route::get('/news/{slug}/og-image.jpg', [SpaController::class, 'ogImage']);
